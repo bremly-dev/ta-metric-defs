@@ -821,9 +821,3 @@ Every number the dashboard compares against lives in configuration, not in a mea
 | Version | Change |
 |---|---|
 | 1.0 | Initial version. Executive Summary and Early Attrition pages. |
-| 1.1 | Date Range slicer behaviour revised. At Risk metrics respond to the period by moving the observation date rather than being exempt. The Executive Summary attrition card documented as static. |
-| 2.0 | **Breaking change.** A filled position is defined at offer acceptance rather than at employee start. Fill Rate numerator, EXEC-02, EXEC-04, EXEC-12 and EXEC-14 restated. EXEC-04 restructured from a shortfall split into Unfilled Demand plus Pending Starts. Started Positions added as a separate governed concept. Document declared authoritative over the project specification and wireframe. |
-| 3.0 | All observed values removed. The document now defines metrics only. Targets, thresholds, risk bands, observation windows and value lists consolidated into section 8 as named configuration parameters. |
-| 3.1 | At Risk metrics (EXEC-07 to EXEC-10) changed from snapshot behaviour to period behaviour, filtered by Target Hire Date like the rest of the Executive Summary. Risk banding continues to compare TOAD against the fixed as-of date. Total Open Positions now reconciles to Unfilled Demand by definition. Requisition snapshot fact no longer required for this page. |
-
-**Next pages to document.** Demand Overview, Funnel Conversion, Offers, Hires, Pipeline Health, At Risk Requisitions detail, Cost per Hire, Efficiency, Candidate NPS, Recruiter Scorecard.
