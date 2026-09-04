@@ -91,21 +91,21 @@ One demand window across the page keeps the visuals reconciled with each other. 
 | ID | Metric | Page | Type | Date basis | Comparison |
 |---|---|---|---|---|---|
 | EXEC-01 | Fill Rate (Positions Filled vs Demand) | Executive Summary | Ratio | Target Hire Date | FY target |
-| EXEC-02 | Positions Filled | Executive Summary | Count | Offer accepted date | — |
-| EXEC-03 | Demand (Positions Due) | Executive Summary | Count | Target Hire Date | — |
-| EXEC-04 | Unfilled Demand and Pending Starts | Executive Summary | Count | Target Hire Date | — |
+| EXEC-02 | Positions Filled | Executive Summary | Sum | Target Hire Date | — |
+| EXEC-03 | Demand (Positions Requested) | Executive Summary | Sum | Target Hire Date | — |
+| EXEC-04 | Pending Starts | Executive Summary | Sum | THD > as-of-date | — |
 | EXEC-05 | Fill Rate Trend (cumulative YTD) | Executive Summary | Trend | Target Hire Date | FY target |
 | EXEC-06 | Forecast Fill Rate | Executive Summary | Forecast | Target Hire Date | FY target |
-| EXEC-07 | Total Open Positions | Executive Summary | Count | Target Hire Date | — |
+| EXEC-07 | Total Open Positions | Executive Summary | Sum | Target Hire Date | — |
 | EXEC-08 | Days to TOAD and Risk Band | Executive Summary | Classification | TOAD vs as-of date | Configured bands |
 | EXEC-09 | Open Positions at Risk / At-Risk Rate | Executive Summary | Count + ratio | Target Hire Date; TOAD vs as-of date | Threshold, PYTD |
 | EXEC-10 | Primary Hiring Constraint | Executive Summary | Mix | Target Hire Date; latest weekly status | — |
-| EXEC-11 | Time to Fill (median) | Executive Summary | Duration | Offer accepted date | FY target, PYTD |
-| EXEC-12 | Funnel Volume by Stage | Executive Summary | Count | Application date | — |
-| EXEC-13 | Stage-to-Stage Conversion | Executive Summary | Ratio | Application date | Per-stage target |
-| EXEC-14 | Cumulative Conversion | Executive Summary | Ratio | Application date | — |
+| EXEC-11 | Time to Fill (median) | Executive Summary | Duration | Target Hire Date | FY target, PYTD |
+| EXEC-12 | Funnel Volume by Stage | Executive Summary | Count | Target Hire Date | — |
+| EXEC-13 | Stage-to-Stage Conversion | Executive Summary | Ratio | Target Hire Date | Per-stage target |
+| EXEC-14 | Cumulative Conversion | Executive Summary | Ratio | Target Hire Date | — |
 | EXEC-15 | Median Days in Stage | Executive Summary | Duration | Stage entry | Per-stage SLA |
-| EXEC-16 | Bottleneck Stage | Executive Summary | Derived flag | Application date | Per-stage target and SLA |
+| EXEC-16 | Bottleneck Stage | Executive Summary | Derived flag | Target Hire Date | Per-stage target and SLA |
 | ATTR-01 | Early Attrition (rolling matured cohorts) | Early Attrition | Ratio | Employee start date | FY target, prior period |
 | ATTR-02 | Latest Matured Cohort | Early Attrition | Ratio | Employee start date | FY target, prior cohort |
 | ATTR-03 | TA-Related Early Attrition | Early Attrition | Ratio | Employee start date | FY target, prior period |
@@ -138,14 +138,13 @@ Fill Rate = Positions Filled ÷ Positions with a Target Hire Date in the period
 
 **Comparison.** FY Fill Rate target.
 
-**How to read it.** The shortfall is the share of needed positions with no accepted offer by the time they were due. The number is a delivery statement, not an activity statement. Recruiters may have been extremely busy and still produce a low Fill Rate if demand grew faster than capacity.
+**How to read it.** The shortfall is the share of needed positions with no accepted offer by the time they were due. The number is a delivery statement.
 
 Because the metric stops at acceptance, it measures what TA controls. It does **not** confirm that the business received the capacity. For that, read it together with pending starts in EXEC-04.
 
 **Common misreadings.**
 - Reading the percentage as seats occupied. It is seats with a signed acceptance. Some of those people will not have started yet.
 - Reading the cumulative year-to-date figure as current performance. See EXEC-05.
-- Comparing this figure with a start-based Fill Rate from an earlier version of the report or from another system. A start-based equivalent is always lower, by the size of the pending-start population. Always state which basis is in use.
 
 **Where to go next.** EXEC-04 (where the gap sits), EXEC-09 (which open positions are late), EXEC-13 (where candidates are lost).
 
@@ -155,13 +154,13 @@ Because the metric stops at acceptance, it measures what TA controls. It does **
 
 **Business question.** How many positions did recruitment successfully close?
 
-**Plain-English definition.** The count of positions with an accepted offer on or before the as-of date, attributed to the requisition that created the demand.
+**Plain-English definition.** The sum of positions filled in requisition.
 
-**Formula.** `Count of positions with an offer accepted date on or before the as-of date, linked to demand in the period.`
+**Formula.** `Sum of filled positions in requisition.`
 
-**Date basis.** Offer accepted date for the event; Target Hire Date for period attribution.
+**Date basis.** Target Hire Date of its requisition for period attribution.
 
-**Excluded.** Offers extended but not accepted. Declined offers. Cancelled positions.
+**Excluded.** Offers extended but not accepted. Declined offers. Cancelled requisition.
 
 **How to read it.** This is the numerator of Fill Rate and the measure of TA output. It closes at the last event recruitment controls.
 
@@ -171,9 +170,9 @@ Because the metric stops at acceptance, it measures what TA controls. It does **
 
 ---
 
-### EXEC-03 — Demand (Positions Due)
+### EXEC-03 — Demand (Requested Positions)
 
-**Business question.** How many positions did the business commit to filling in this period?
+**Business question.** How many approved positions did the business commit to filling in this period?
 
 **Plain-English definition.** The total number of positions with a Target Hire Date inside the selected period, across all non-cancelled requisitions.
 
@@ -183,7 +182,7 @@ Because the metric stops at acceptance, it measures what TA controls. It does **
 
 **Excluded.** Cancelled requisitions and cancelled positions.
 
-**How to read it.** Demand is the denominator that makes Fill Rate fair. It is set by workforce planning and hiring managers, not by TA. A rise in Demand with flat Positions Filled will lower Fill Rate even if recruitment performance is unchanged, which is exactly the pattern to look for when Fill Rate deteriorates.
+**How to read it.** Demand is the denominator that makes Fill Rate fair. It is set by workforce planning and hiring managers, not by TA.
 
 **Common misreadings.** Treating Demand as a TA-controlled number. TA influences delivery, not the plan.
 
@@ -191,33 +190,19 @@ Because the metric stops at acceptance, it measures what TA controls. It does **
 
 ### EXEC-04 — Unfilled Demand and Pending Starts
 
-**Business question.** Where is the shortfall, and how much of what we closed has actually arrived?
+**Business question.** How many of the demand has been filled in advance?
 
-**Plain-English definition.** Two separate measures that sit either side of the Fill Rate numerator. Unfilled Demand is the positions with no accepted offer. Pending Starts is the accepted positions where the person has not yet begun work.
+**Plain-English definition.** Pending Starts is the accepted positions where the person has not yet begun work.
 
 **Formula.**
 ```
 Unfilled Demand   = Demand − Positions Filled            (no accepted offer)
 Pending Starts    = Positions Filled − Started Positions  (accepted, not yet begun)
-Started Positions = Count of filled positions with an employee start on or before the as-of date
 ```
 
-**Date basis.** Target Hire Date for scope; offer acceptance status and start status at the as-of date.
+**Date basis.** Target Hire Date for scope.
 
-**How to read it.** These are two different management problems and they belong to different owners.
-
-**Unfilled Demand** is the recruitment gap. It needs pipeline intervention, and it is the population behind the at-risk exposure in EXEC-09.
-
-**Pending Starts** is not a recruitment gap. Recruitment finished. It represents capacity that has been secured but has not yet arrived, usually because of notice periods. It matters for two reasons: it is the difference between the Fill Rate the TA team reports and the headcount the business feels, and it carries renege risk, since an accepted offer can still be withdrawn before day one.
-
-If Fill Rate is challenged in a leadership meeting, the honest framing is three numbers rather than one: how much was closed, how much of that has started, and how much is still genuinely unfilled.
-
-**Common misreadings.**
-- Treating Pending Starts as a failure. It is a timing measure, not a shortfall.
-- Treating Pending Starts as guaranteed. Reneges land here.
-- Adding Unfilled Demand and Pending Starts together as if both were unfilled demand. Only the first is.
-
-**Where to go next.** EXEC-09 and EXEC-10 for the positions without acceptances.
+**Pending Starts** Recruitment finished in advance. It represents filled positions that has been secured but has not yet arrived, because target hire date is the future.
 
 ---
 
