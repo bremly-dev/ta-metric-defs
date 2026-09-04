@@ -1,4 +1,4 @@
-# Metric Definitions — TA Analytics Dashboard
+# Metric Definitions — TA Analytics
 
 **Scope:** Executive Summary and Early Attrition pages.
 **Audience:** VP / Head of Talent Acquisition, business unit leaders, HR business partners, and the analytics team that maintains the model.
