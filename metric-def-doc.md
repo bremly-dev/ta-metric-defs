@@ -106,14 +106,8 @@ One demand window across the page keeps the visuals reconciled with each other. 
 | EXEC-14 | Cumulative Conversion | Executive Summary | Ratio | Target Hire Date | — |
 | EXEC-15 | Median Days in Stage | Executive Summary | Duration | Stage entry | Per-stage SLA |
 | EXEC-16 | Bottleneck Stage | Executive Summary | Derived flag | Target Hire Date | Per-stage target and SLA |
-| ATTR-01 | Early Attrition (rolling matured cohorts) | Early Attrition | Ratio | Employee start date | FY target, prior period |
-| ATTR-02 | Latest Matured Cohort | Early Attrition | Ratio | Employee start date | FY target, prior cohort |
-| ATTR-03 | TA-Related Early Attrition | Early Attrition | Ratio | Employee start date | FY target, prior period |
-| ATTR-04 | Cohort Maturity Flag | Early Attrition | Classification | Employee start date | Observation window |
-| ATTR-05 | Monthly Cohort Attrition Rate | Early Attrition | Trend | Employee start date | Watch level |
-| ATTR-06 | Early Leavers | Early Attrition | Count | Termination date | — |
-| ATTR-07 | Reason Coding Coverage | Early Attrition | Ratio | Termination date | Minimum coverage |
-| ATTR-08 | TA / Non-TA / Unknown Split | Early Attrition | Mix | Termination date | — |
+| EXEC-17 | Early Attrition (rolling matured cohorts) | Early Attrition | Ratio | Employee start date | FY target, prior period |
+
 
 ---
 
@@ -509,36 +503,9 @@ Reported value          = Median across all completed fills in the period
 
 ---
 
-## 5. Early Attrition metrics
+## Early Attrition metrics
 
-> **Read this before any metric in this section.** Early attrition is a cohort measure, not a period measure. A new hire cannot be counted as retained until they have had the chance to leave. Every metric below therefore separates two ideas that are easy to confuse: **cohort maturity** (has this person had the full observation window in which to leave?) and **attrition outcome** (did they leave?). Mixing them produces a dashboard that always looks good, because the most recent hires have not had time to fail yet.
-
-### ATTR-04 — Cohort Maturity Flag
-
-*Documented first because every other metric on this page depends on it.*
-
-**Business question.** Which new hires can we fairly include in an early retention measure?
-
-**Plain-English definition.** A hire is mature once the full observation window has passed since their start date. A monthly cohort is fully matured only when every hire in that start month is mature.
-
-**Formula.**
-```
-Employee is mature  if  start_date ≤ as_of_date − observation_window_days
-Cohort is fully matured  if  every hire in that start month is mature
-Latest fully matured cohort = the most recent start month satisfying the above
-```
-
-**Date basis.** Employee start date, evaluated against the fixed as-of date.
-
-**Why the latest cohort is usually two months back, not one.** Maturity is decided by the *last* hire in the month, not the first. Someone starting on the final day of a month completes the window well into a later month. Until that person has completed the observation window, the whole cohort is only partly observed and is excluded. Presenting it would understate attrition, because leavers who have not yet left would be counted as stayers.
-
-**How to read it.** The cohort window on this page is calculated from the data, not typed in. It rolls forward automatically as the as-of date advances.
-
-**Common misreadings.** The most damaging error in early attrition reporting is treating a very recent hire as a successful retention outcome. Someone three weeks into the job is neither a success nor a failure yet. They are simply not eligible.
-
----
-
-### ATTR-01 — Early Attrition (Rolling Matured Cohorts)
+### EXEC-17 — Early Attrition (Rolling Matured Cohorts)
 
 **Business question.** Of the people we hired, what share left within their first weeks?
 
@@ -568,131 +535,6 @@ Read it against Time to Fill in particular. Attrition rising while Time to Fill 
 - Assuming all early leaving is a TA problem. See ATTR-03.
 
 **Where to go next.** ATTR-05 for the trend, ATTR-08 for the cause, ATTR-02 for the most recent complete signal.
-
----
-
-### ATTR-02 — Latest Matured Cohort
-
-**Business question.** What is the most recent complete evidence we have, rather than a rolling average?
-
-**Plain-English definition.** The early attrition rate for the most recent start month in which every hire has completed the observation window.
-
-**Formula.**
-```
-Rate = Leavers within observation window in the latest fully matured cohort
-       ÷ Hires in that cohort
-```
-
-**Date basis.** Employee start date.
-
-**Comparison.** FY target and the immediately preceding cohort.
-
-**How to read it.** The rolling figure is stable but slow, because it averages away recent movement. This card exists to show the newest complete signal. When the rolling metric and the latest cohort disagree, the latest cohort is the leading indicator and the rolling figure is the lagging one.
-
-**Common misreadings.**
-- Dismissing a single cohort as noise. Check the cohort size and the leaver count before deciding. A consecutive run in the same direction across several cohorts rules out a one-month fluctuation.
-- Asking why the two most recent months are not shown. Those cohorts are not yet complete.
-
----
-
-### ATTR-03 — TA-Related Early Attrition
-
-**Business question.** How much of our early attrition is something recruitment could have prevented?
-
-**Plain-English definition.** The share of matured-cohort hires who left within the observation window for a reason coded as related to the hiring process, such as role, pay, location or schedule expectations set during recruitment.
-
-**Formula.**
-```
-TA-Related Early Attrition = Early leavers with a TA-attributable reason
-                             ÷ Hires eligible for observation
-```
-
-The denominator is the same as ATTR-01, so the two metrics are directly comparable.
-
-**Date basis.** Employee start date for the cohort; termination date and reason code for the outcome.
-
-**Excluded.** Exits with no coded reason are excluded from the numerator. They remain inside ATTR-01, so the overall rate is never understated. This is a deliberate governance rule: uncoded exits stay in the headline number but sit outside the TA and non-TA split, so neither side of the split can be inflated by guesswork.
-
-**Comparison.** FY target and the equivalent prior period.
-
-**How to read it.** This metric makes accountability legible. Without the split, a TA leader is either defending the whole early attrition rate or dismissing all of it, and neither position is credible.
-
-Watch the *direction* of this metric relative to ATTR-01. If the TA-attributable share is growing faster than the overall rate, the deterioration is concentrated in the part of early attrition that recruitment can actually act on.
-
-**Common misreadings.**
-- Reading the non-TA group as irrelevant. It is not a TA metric, but it is a business problem and a real signal for HR operations and line management.
-- Assuming reason codes are objective. They come from exit interviews and manager input. Treat the split as directionally reliable, not exact, and check coverage in ATTR-07 before acting on it.
-
----
-
-### ATTR-05 — Monthly Cohort Attrition Rate
-
-**Business question.** Is early attrition getting better or worse, and when did it change?
-
-**Plain-English definition.** The early attrition rate for each fully matured monthly start cohort, shown as a trend with the number of leavers inside each bar.
-
-**Formula.** `Rate per cohort = Leavers within the observation window ÷ Hires in that start month.`
-
-**Date basis.** Employee start date.
-
-**Excluded.** Cohorts that are not fully matured.
-
-**Comparison.** The configured watch level, the FY target, and the rolling rate as a reference line.
-
-**How to read it.** Cohorts are attributed to when people **started**, not when they left. A rising bar means hires made in that month performed badly, which points investigation at what happened during that hiring period: sourcing channel, volume pressure, screening depth, or the roles being filled.
-
-Three consecutive moves in the same direction is the point at which a trend stops being noise.
-
-**Common misreadings.**
-- Reading a cohort as the month people resigned. It is the month they were hired.
-- Comparing bar heights without checking the leaver counts underneath. Small cohorts move sharply on very few leavers. If the rate and the count both rise, the pattern is real rather than a denominator effect.
-- Expecting to see the most recent months. They are excluded until mature.
-
----
-
-### ATTR-06 — Early Leavers
-
-**Business question.** How many people are we actually talking about?
-
-**Plain-English definition.** The count of new hires from matured cohorts who left within the observation window.
-
-**Formula.** `Count of matured-cohort hires with tenure_days ≤ observation_window_days and a termination date.`
-
-**Date basis.** Termination date for the event; employee start date for cohort attribution.
-
-**How to read it.** Percentages make small problems look manageable and large problems look abstract. The count is what makes the cost concrete: each one is a recruitment cycle repeated, a requisition reopened, and hiring manager time spent twice.
-
----
-
-### ATTR-07 — Reason Coding Coverage
-
-**Business question.** How much can we trust the reason analysis?
-
-**Plain-English definition.** The share of early exits with a recorded leaving reason.
-
-**Formula.** `Coverage = Coded exits ÷ Total early exits`
-
-**Date basis.** Termination date.
-
-**Comparison.** The configured minimum coverage level.
-
-**How to read it.** This is a data quality metric shown to the business on purpose. Above the minimum level, the reason split is reliable enough to act on. Below it, the split becomes difficult to defend, because the uncoded group could plausibly change the conclusion.
-
-**Common misreadings.** Ignoring it. Coverage is what separates an evidence-based cause analysis from an assumption.
-
----
-
-### ATTR-08 — TA / Non-TA / Unknown Split
-
-**Business question.** Why are new hires leaving, and who owns each reason?
-
-**Plain-English definition.** All early exits, grouped by coded reason and assigned to an accountable area.
-
-**Formula.** `Count of early leavers grouped by termination_reason, rolled up by the is_ta_attributable mapping.`
-
-**Date basis.** Termination date.
-
-**Governed reason taxonomy.** The value list and the TA attribution are configured, not decided in the report. New reason values cannot be introduced without an attribution decision.
 
 | Reason | Attribution |
 |---|---|
@@ -782,12 +624,6 @@ Every number the dashboard compares against lives in configuration, not in a mea
 | `fill_rate_target` | EXEC-01, EXEC-05, EXEC-06 |
 | `time_to_fill_target_days` | EXEC-11 |
 | `at_risk_rate_threshold` | EXEC-09 |
-| `early_attrition_target` | ATTR-01, ATTR-02 |
-| `ta_related_attrition_target` | ATTR-03 |
-| `early_attrition_watch_level` | ATTR-05 |
-| `stage_conversion_target` | EXEC-13, per stage |
-| `stage_sla_days` | EXEC-15, per stage |
-| `min_reason_coding_coverage` | ATTR-07 |
 
 **Risk bands** — `config/business_rules.yml`
 
@@ -796,20 +632,12 @@ Every number the dashboard compares against lives in configuration, not in a mea
 | `high_risk_max_days` | Upper bound of the High band, in days to TOAD |
 | `medium_risk_max_days` | Upper bound of the Medium band, in days to TOAD |
 
-**Cohort rules** — `config/business_rules.yml`
-
-| Parameter | Applies to |
-|---|---|
-| `observation_window_days` | Early attrition observation period |
-| `rolling_cohort_months` | Number of matured cohorts in the rolling metric |
 
 **Value lists** — `config/business_rules.yml`
 
 | Parameter | Applies to |
 |---|---|
 | `hiring_constraint_values` | EXEC-10 |
-| `termination_reason_values` | ATTR-08 |
-| `is_ta_attributable` mapping | ATTR-03, ATTR-08 |
 | `min_stage_volume` | EXEC-16 bottleneck eligibility |
 
 **Rule.** A target or threshold must never be hardcoded in a DAX measure, a Python module or this document. If a comparison value appears anywhere other than configuration, it is a defect.
